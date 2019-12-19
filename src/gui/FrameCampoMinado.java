@@ -2,14 +2,21 @@ package gui;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.Timer;
+
+import controladores.ControladorCampoMinado;
+import observer.IObservado;
+import observer.IObservador;
 
 @SuppressWarnings("serial")
-public class FrameCampoMinado extends JFrame {
+public class FrameCampoMinado extends JFrame implements IObservador, ActionListener {
 	
-	private final int FRAME_LARGURA = 500;
-	private final int FRAME_ALTURA = 600;
+	Timer timerDeEsperaParaMostrarMensagemDeDerrota = new Timer(500, this);
 	
 	public FrameCampoMinado() {
 		
@@ -18,23 +25,43 @@ public class FrameCampoMinado extends JFrame {
 		
 	    //propriedades do frame
 		setLayout(null);
-	    setSize(FRAME_LARGURA, FRAME_ALTURA);
-	    setResizable(true);
+		getContentPane().setPreferredSize(new Dimension(painelTabuleiro.getPreferredSize().width - 1,
+	    		painelTabuleiro.getPreferredSize().height - 1));
+	    pack();
+	    setResizable(false);
 	    setTitle("Campo Minado, versão Spielberg Liso");
 	    setDefaultCloseOperation(EXIT_ON_CLOSE);
 	    setVisible(true);
 	    
 	    //centraliza o frame no centro da tela
 	    Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
-	    int x = (int) dimension.width/2 - FRAME_LARGURA/2;
-	    int y = (int) dimension.height/2 - FRAME_ALTURA/2;
+	    int x = dimension.width/2 - getSize().width/2;
+	    int y = dimension.height/2 - getSize().height/2;
 	    setLocation(x, y);
 	    
 	    //adicionando o tabuleiro
-	    painelTabuleiro.setSize(painelTabuleiro.getTabuleiro().getNumLinhas() * painelTabuleiro.getTamanhoQuadrado() + 1, 
-	    		painelTabuleiro.getTabuleiro().getNumColunas() * painelTabuleiro.getTamanhoQuadrado() + 1);
-	    painelTabuleiro.setLocation(0, 0);	
-	    getContentPane().add(painelTabuleiro);
+	    painelTabuleiro.setSize(painelTabuleiro.getTabuleiro().getNumColunas() * painelTabuleiro.getTamanhoQuadrado() + 1, 
+	    		painelTabuleiro.getTabuleiro().getNumLinhas() * painelTabuleiro.getTamanhoQuadrado() + 1);
+	    painelTabuleiro.setLocation(-1, 0);	
+	    
+	    ControladorCampoMinado.getControladorCampoMinado().add(this);
+	}
+
+	@Override
+	public void notify(IObservado observado) {
+		boolean perdeu = (boolean) ControladorCampoMinado.getControladorCampoMinado().get(1);
+		if(perdeu) {
+			timerDeEsperaParaMostrarMensagemDeDerrota.setRepeats(false);
+			timerDeEsperaParaMostrarMensagemDeDerrota.start(); 
+		}
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		JOptionPane.showMessageDialog(this,"kkkk perdeu! burrao...");
+		ControladorCampoMinado.getControladorCampoMinado().resetar();
+		ControladorCampoMinado.getControladorCampoMinado().iniciar();
+		this.setVisible(false);
 	}
 
 }

@@ -1,34 +1,51 @@
 package dominio;
 
-import java.awt.Color;
+import java.util.Random;
 
 public class Tabuleiro {
 	
-	private int numColunas = 15;
-	private int numLinhas = 15;
-	private Color[][] MatrizCor = new Color[numColunas][numLinhas];
+	private int numColunas = 20;
+	private int numLinhas = 20;
+	private TipoCasa[][] matrizTabuleiro = new TipoCasa[numColunas][numLinhas];
+	private int quantidadeDeCasasSemMina = 2;
 	
 	public Tabuleiro() {
 		for (int i = 0; i < numColunas; i++){
 			for (int j = 0 ; j < numLinhas; j++ ){
-				MatrizCor[i][j] = Color.cyan;
+				matrizTabuleiro[i][j] = TipoCasa.casaIntactaComMina;
 			}
 		}
+		
+		for (int i = 0; i < quantidadeDeCasasSemMina; i++){
+			int coluna;
+			int linha;
+			Random colunaSemMina = new Random();
+			coluna = colunaSemMina.nextInt(numColunas);
+			Random linhaSemMina = new Random();
+			linha = linhaSemMina.nextInt(numLinhas);
+			
+			if(matrizTabuleiro[coluna][linha] == TipoCasa.casaIntactaSemMina) {
+				i--;
+			}
+			
+			matrizTabuleiro[coluna][linha] = TipoCasa.casaIntactaSemMina;
+		}
+
 	}
 	
 	/**
-	 * Verifica se a casa da linha e coluna especificada está vazia
+	 * Verifica se a casa da linha e coluna especificada possui mina
 	 * @param coluna - coluna da casa
 	 * @param linha - linha da casa
-	 * @return true, se a casa estiver vazia. false, se estiver ocupada
+	 * @return true, se a casa tiver mina. false, se não estiver
 	 * ou se o tabuleiro nao possui casa na coordenada recebida.
 	 */
-	public boolean CasaEstaVazia(int coluna, int linha) {
+	public boolean CasaNaoTemMina(int coluna, int linha) {
 		if(linha >= numLinhas || linha < 0 || coluna >= numColunas || coluna < 0) {
 			return false;
 		}
 		
-		if(MatrizCor[coluna][linha] == Color.cyan) { //essa linha deve mudar depois
+		if(matrizTabuleiro[coluna][linha] == TipoCasa.casaIntactaSemMina) {
 			return true;
 		} else {
 			return false;
@@ -36,23 +53,23 @@ public class Tabuleiro {
 	}
 	
 	/**
-	 * Torna vazia a casa da linha e coluna especificada.
-	 * Se a casa estiver vazia, não faz nada.
+	 * Tira a mina da casa.
+	 * Se a casa não tiver mina, não faz nada.
 	 * @param coluna - coluna da casa
 	 * @param linha - linha da casa
 	 */
-	public void EsvaziaCasa(int coluna, int linha) {
+	public void TiraMinaDaCasa(int coluna, int linha) {
 		if(linha >= numLinhas || linha < 0 || coluna >= numColunas || coluna < 0) {
 			return;
 		}
 		
-		MatrizCor[coluna][linha] = Color.cyan;
+		matrizTabuleiro[coluna][linha] = TipoCasa.casaIntactaSemMina;
 	}
 	
 	public void ResetaTabuleiro() {
 		for (int i = 0; i < numColunas; i++){
 			for (int j = 0 ; j < numLinhas; j++ ){
-				EsvaziaCasa(i, j);
+				TiraMinaDaCasa(i, j);
 			}
 		}
 	}
@@ -73,12 +90,12 @@ public class Tabuleiro {
 		this.numLinhas = numLinhas;
 	}
 
-	public Color[][] getMatrizCor() {
-		return MatrizCor;
+	public TipoCasa[][] getMatrizTabuleiro() {
+		return matrizTabuleiro;
 	}
 
-	public void setMatrizCor(Color[][] matrizCor) {
-		MatrizCor = matrizCor;
+	public void setMatrizTabuleiro(TipoCasa[][] matrizTabuleiro) {
+		this.matrizTabuleiro = matrizTabuleiro;
 	}
 
 }
