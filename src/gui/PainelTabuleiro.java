@@ -18,6 +18,7 @@ import java.io.IOException;
 
 /**
  * Classe responsável pelo desenho do tabuleiro
+ * 
  * @author Gabriel Boscoli
  *
  */
@@ -26,20 +27,21 @@ public class PainelTabuleiro extends JPanel implements IObservador, MouseListene
 
 	private int tamanhoQuadrado = 25;
 	Tabuleiro tabuleiro = (Tabuleiro) ControladorCampoMinado.getControladorCampoMinado().get(0);
-	
+
 	private boolean perdeu = false;
 	Image imagemMina;
-	
+
 	public PainelTabuleiro() {
 		this.setLayout(null);
 		this.setDoubleBuffered(true);
-		
-		Dimension dimensao = new Dimension(tamanhoQuadrado * tabuleiro.getNumColunas(), tamanhoQuadrado * tabuleiro.getNumLinhas());
+
+		Dimension dimensao = new Dimension(tamanhoQuadrado * tabuleiro.getNumColunas(),
+				tamanhoQuadrado * tabuleiro.getNumLinhas());
 		setPreferredSize(dimensao);
-		
+
 		this.addMouseListener(this);
 		ControladorCampoMinado.getControladorCampoMinado().add(this);
-		
+
 		BufferedImage img = null;
 		try {
 			img = ImageIO.read(getClass().getResourceAsStream("/minesweeper.png"));
@@ -48,29 +50,29 @@ public class PainelTabuleiro extends JPanel implements IObservador, MouseListene
 		}
 		imagemMina = img;
 	}
-	
+
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		TipoCasa tipoCasa = null;
 		int x = 0;
 		int y = 0;
-		
+
 		Graphics2D g2d = (Graphics2D) g;
 		int linha, coluna;
-		
-		//desenhando o tabuleiro
-		for (coluna=0; coluna < tabuleiro.getNumColunas(); coluna++){
+
+		// desenhando o tabuleiro
+		for (coluna = 0; coluna < tabuleiro.getNumColunas(); coluna++) {
 			x = tamanhoQuadrado * coluna;
-			for (linha=0; linha < tabuleiro.getNumLinhas(); linha++){
+			for (linha = 0; linha < tabuleiro.getNumLinhas(); linha++) {
 				y = tamanhoQuadrado * linha;
 				tipoCasa = tabuleiro.getMatrizTabuleiro()[coluna][linha];
 				Rectangle2D retangulo = new Rectangle2D.Double(x, y, tamanhoQuadrado, tamanhoQuadrado);
 				g2d.setPaint(tipoCasaToColor(tipoCasa));
-				if(tipoCasa == TipoCasa.casaComMinaAtirada) {
+				if (tipoCasa == TipoCasa.casaComMinaAtirada) {
 					g2d.setPaint(Color.red);
 				}
-				if(tipoCasa == TipoCasa.casaSemMinaAtirada) {
-					JLabel label = new JLabel("   8"); //roubei bonito aqui. ver como fazer da melhor forma
+				if (tipoCasa == TipoCasa.casaSemMinaAtirada) {
+					JLabel label = new JLabel("   8"); // roubei bonito aqui. ver como fazer da melhor forma
 					label.setSize(tamanhoQuadrado, tamanhoQuadrado);
 					label.setLocation(x, tamanhoQuadrado * linha);
 					this.add(label);
@@ -80,19 +82,19 @@ public class PainelTabuleiro extends JPanel implements IObservador, MouseListene
 				g2d.draw(retangulo);
 			}
 		}
-		if(perdeu) {
-			desenhaMinas(g); //nao gostei de fazer dois loops, um para pintar e outro para colocar as minas.			
+		if (perdeu) {
+			desenhaMinas(g); // nao gostei de fazer dois loops, um para pintar e outro para colocar as minas.
 		}
 	}
-	
+
 	private void desenhaMinas(Graphics g) {
 		int linha, coluna;
 		TipoCasa tipoCasa;
-		
-		for (coluna=0; coluna < tabuleiro.getNumColunas(); coluna++){
-			for (linha=0; linha < tabuleiro.getNumLinhas(); linha++){
+
+		for (coluna = 0; coluna < tabuleiro.getNumColunas(); coluna++) {
+			for (linha = 0; linha < tabuleiro.getNumLinhas(); linha++) {
 				tipoCasa = tabuleiro.getMatrizTabuleiro()[coluna][linha];
-				if(tipoCasa == TipoCasa.casaIntactaComMina || tipoCasa == TipoCasa.casaComMinaAtirada) {
+				if (tipoCasa == TipoCasa.casaIntactaComMina || tipoCasa == TipoCasa.casaComMinaAtirada) {
 					g.drawImage(imagemMina, tamanhoQuadrado * coluna, tamanhoQuadrado * linha, 25, 25, null);
 				}
 			}
@@ -102,17 +104,17 @@ public class PainelTabuleiro extends JPanel implements IObservador, MouseListene
 	public int getTamanhoQuadrado() {
 		return tamanhoQuadrado;
 	}
-	
+
 	public Tabuleiro getTabuleiro() {
 		return tabuleiro;
 	}
-	
+
 	public void setTabuleiro(Tabuleiro tabuleiro) {
 		this.tabuleiro = tabuleiro;
 	}
-	
+
 	private Color tipoCasaToColor(TipoCasa tipoCasa) {
-		if(tipoCasa == TipoCasa.casaIntactaComMina || tipoCasa == TipoCasa.casaIntactaSemMina) {
+		if (tipoCasa == TipoCasa.casaIntactaComMina || tipoCasa == TipoCasa.casaIntactaSemMina) {
 			return Color.cyan;
 		} else if (tipoCasa == TipoCasa.casaSemMinaAtirada) {
 			return Color.white;
@@ -122,7 +124,7 @@ public class PainelTabuleiro extends JPanel implements IObservador, MouseListene
 			return null;
 		}
 	}
-	
+
 	@Override
 	public void notify(IObservado observado) {
 		perdeu = (boolean) ControladorCampoMinado.getControladorCampoMinado().get(1);
@@ -131,12 +133,12 @@ public class PainelTabuleiro extends JPanel implements IObservador, MouseListene
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		int coluna = e.getX()/tamanhoQuadrado;
-		int linha = e.getY()/tamanhoQuadrado;
-		
+		int coluna = e.getX() / tamanhoQuadrado;
+		int linha = e.getY() / tamanhoQuadrado;
+
 		ControladorCampoMinado.getControladorCampoMinado().campoMinadoClicado(coluna, linha);
 	}
-	
+
 	@Override
 	public void mouseClicked(MouseEvent e) {
 	}
