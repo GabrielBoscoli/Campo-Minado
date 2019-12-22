@@ -25,8 +25,8 @@ public class FrameCampoMinado extends JFrame implements IObservador, ActionListe
 
 		// propriedades do frame
 		setLayout(null);
-		getContentPane().setPreferredSize(new Dimension(painelTabuleiro.getPreferredSize().width - 1,
-				painelTabuleiro.getPreferredSize().height - 1));
+		getContentPane().setPreferredSize(new Dimension(painelTabuleiro.getPreferredSize().width - 11,
+				painelTabuleiro.getPreferredSize().height - 10));
 		pack();
 		setResizable(false);
 		setTitle("Campo Minado, versão Spielberg Liso");

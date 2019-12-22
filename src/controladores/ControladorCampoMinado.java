@@ -51,7 +51,7 @@ public class ControladorCampoMinado implements IObservado {
 	}
 	
 	public void ModoFacil() {
-		ModoDeJogo(5, 5);
+		ModoDeJogo(6, 6);
 	}
 	
 	public void ModoMedio() {

@@ -68,9 +68,6 @@ public class PainelTabuleiro extends JPanel implements IObservador, MouseListene
 				tipoCasa = tabuleiro.getMatrizTabuleiro()[coluna][linha];
 				Rectangle2D retangulo = new Rectangle2D.Double(x, y, tamanhoQuadrado, tamanhoQuadrado);
 				g2d.setPaint(tipoCasaToColor(tipoCasa));
-				if (tipoCasa == TipoCasa.casaComMinaAtirada) {
-					g2d.setPaint(Color.red);
-				}
 				if (tipoCasa == TipoCasa.casaSemMinaAtirada) {
 					JLabel label = new JLabel("   8"); // roubei bonito aqui. ver como fazer da melhor forma
 					label.setSize(tamanhoQuadrado, tamanhoQuadrado);
@@ -118,7 +115,7 @@ public class PainelTabuleiro extends JPanel implements IObservador, MouseListene
 			return Color.cyan;
 		} else if (tipoCasa == TipoCasa.casaSemMinaAtirada) {
 			return Color.white;
-		} else if (tipoCasa == TipoCasa.casaSemMinaAtirada) {
+		} else if (tipoCasa == TipoCasa.casaComMinaAtirada) {
 			return Color.red;
 		} else {
 			return null;
