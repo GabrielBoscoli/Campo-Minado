@@ -19,6 +19,9 @@ public class ControladorCampoMinado implements IObservado {
 	
 	MenuPrincipal menuPrincipal;
 	FrameCampoMinado frameCampoMinado;
+	
+	int quantidadeDeCasasAcertadas = 0;
+	boolean venceu = false;
 
 	private ControladorCampoMinado() {
 
@@ -43,6 +46,11 @@ public class ControladorCampoMinado implements IObservado {
 			perdeu = true;
 		} else if (tipoCasa == TipoCasa.casaIntactaSemMina) {
 			matrizTabuleiro[coluna][linha] = TipoCasa.casaSemMinaAtirada;
+			quantidadeDeCasasAcertadas++;
+		}
+		
+		if(verificaSeVenceu()) {
+			venceu = true;
 		}
 
 		for (IObservador observador : listaObservadores) {
@@ -50,6 +58,10 @@ public class ControladorCampoMinado implements IObservado {
 		}
 	}
 	
+	private boolean verificaSeVenceu() {
+		return quantidadeDeCasasAcertadas == tabuleiro.getQuantidadeDeCasasSemMina();
+	}
+
 	public void ModoFacil() {
 		ModoDeJogo(6, 6);
 	}
@@ -90,8 +102,11 @@ public class ControladorCampoMinado implements IObservado {
 	public Object get(int i) {
 		if (i == 0) {
 			return tabuleiro;
-		} else if (i == 1)
+		} else if (i == 1) {
 			return perdeu;
+		} else if (i == 2) {
+			return venceu;
+		}
 		return null;
 	}
 

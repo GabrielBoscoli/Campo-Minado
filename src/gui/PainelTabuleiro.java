@@ -69,7 +69,7 @@ public class PainelTabuleiro extends JPanel implements IObservador, MouseListene
 				Rectangle2D retangulo = new Rectangle2D.Double(x, y, tamanhoQuadrado, tamanhoQuadrado);
 				g2d.setPaint(tipoCasaToColor(tipoCasa));
 				if (tipoCasa == TipoCasa.casaSemMinaAtirada) {
-					JLabel label = new JLabel("   8"); // roubei bonito aqui. ver como fazer da melhor forma
+					JLabel label = new JLabel("   " + tabuleiro.getQntBombasAoRedor(coluna, linha)); // roubei bonito aqui. ver como fazer da melhor forma
 					label.setSize(tamanhoQuadrado, tamanhoQuadrado);
 					label.setLocation(x, tamanhoQuadrado * linha);
 					this.add(label);

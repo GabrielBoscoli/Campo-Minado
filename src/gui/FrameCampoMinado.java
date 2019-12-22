@@ -51,9 +51,15 @@ public class FrameCampoMinado extends JFrame implements IObservador, ActionListe
 	@Override
 	public void notify(IObservado observado) {
 		boolean perdeu = (boolean) ControladorCampoMinado.getControladorCampoMinado().get(1);
+		boolean venceu = (boolean) ControladorCampoMinado.getControladorCampoMinado().get(2);
 		if (perdeu) {
 			timerDeEsperaParaMostrarMensagemDeDerrota.setRepeats(false);
 			timerDeEsperaParaMostrarMensagemDeDerrota.start();
+		} else if (venceu) {
+			JOptionPane.showMessageDialog(this, "voce venceu! n fez mais do que seu dever...");
+			ControladorCampoMinado.getControladorCampoMinado().resetar();
+			ControladorCampoMinado.getControladorCampoMinado().iniciar();
+			this.setVisible(false);
 		}
 	}
 
