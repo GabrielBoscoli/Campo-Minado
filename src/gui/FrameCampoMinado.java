@@ -5,6 +5,7 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
@@ -21,10 +22,9 @@ public class FrameCampoMinado extends JFrame implements IObservador, ActionListe
 	public FrameCampoMinado() {
 
 		PainelTabuleiro painelTabuleiro = new PainelTabuleiro();
-		this.add(painelTabuleiro);
 
 		// propriedades do frame
-		setLayout(null);
+		getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 		getContentPane().setPreferredSize(new Dimension(painelTabuleiro.getPreferredSize().width - 11,
 				painelTabuleiro.getPreferredSize().height - 10));
 		pack();
@@ -46,6 +46,7 @@ public class FrameCampoMinado extends JFrame implements IObservador, ActionListe
 		painelTabuleiro.setLocation(-1, 0);
 
 		ControladorCampoMinado.getControladorCampoMinado().add(this);
+		this.add(painelTabuleiro);
 	}
 
 	@Override

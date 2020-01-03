@@ -66,7 +66,7 @@ public class PainelTabuleiro extends JPanel implements IObservador, MouseListene
 			for (linha = 0; linha < tabuleiro.getNumLinhas(); linha++) {
 				y = tamanhoQuadrado * linha;
 				tipoCasa = tabuleiro.getMatrizTabuleiro()[coluna][linha];
-				Rectangle2D retangulo = new Rectangle2D.Double(x, y, tamanhoQuadrado, tamanhoQuadrado);
+				Rectangle2D retangulo = new Rectangle2D.Double(x - 1 /*"- 1" adicionado por conta do border layout*/, y, tamanhoQuadrado, tamanhoQuadrado);
 				g2d.setPaint(tipoCasaToColor(tipoCasa));
 				if (tipoCasa == TipoCasa.casaSemMinaAtirada) {
 					JLabel label = new JLabel("   " + tabuleiro.getQntBombasAoRedor(coluna, linha)); // roubei bonito aqui. ver como fazer da melhor forma
