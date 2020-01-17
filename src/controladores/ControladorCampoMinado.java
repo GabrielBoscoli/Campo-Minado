@@ -24,6 +24,7 @@ public class ControladorCampoMinado implements IObservado {
 	boolean venceu = false;
 	
 	ArrayList<Coordenada> casasAbertas = new ArrayList<>();
+	int quantidadeCasasAbertas = 0;
 
 	private ControladorCampoMinado() {
 
@@ -49,6 +50,7 @@ public class ControladorCampoMinado implements IObservado {
 			perdeu = true;
 		} else if (tipoCasa == TipoCasa.casaIntactaSemMina) {
 			matrizTabuleiro[coluna][linha] = TipoCasa.casaSemMinaAtirada;
+			quantidadeCasasAbertas++;
 			casasAbertas.add(new Coordenada(coluna, linha));
 			if(tabuleiro.getQntBombasAoRedor(coluna, linha) == 0) {
 				abreTodasAsCasaAoRedor(coluna, linha);
@@ -110,6 +112,7 @@ public class ControladorCampoMinado implements IObservado {
 	private void abreTodasAsCasaAoRedorAux(int coluna, int linha) {
 		if(tabuleiro.getMatrizTabuleiro()[coluna][linha] == TipoCasa.casaIntactaSemMina) {
 			tabuleiro.getMatrizTabuleiro()[coluna][linha] = TipoCasa.casaSemMinaAtirada;
+			quantidadeCasasAbertas++;
 			casasAbertas.add(new Coordenada(coluna, linha));
 			if(tabuleiro.getQntBombasAoRedor(coluna, linha) == 0) {
 				abreTodasAsCasaAoRedor(coluna,linha);
@@ -118,19 +121,11 @@ public class ControladorCampoMinado implements IObservado {
 	}
 	
 	private boolean verificaSeVenceu() {
-		int contador = 0;
-		for(int i = 0; i < tabuleiro.getNumColunas(); i++) {
-			for(int j = 0; j < tabuleiro.getNumLinhas(); j++) {
-				if(tabuleiro.getMatrizTabuleiro()[i][j] == TipoCasa.casaSemMinaAtirada) {
-					contador++;
-				}
-			}
-		}
-		return contador == tabuleiro.getQuantidadeDeCasasSemMina();
+		return quantidadeCasasAbertas == tabuleiro.getQuantidadeDeCasasSemMina();
 	}
 
 	public void ModoFacil() {
-		ModoDeJogo(6, 6, 2);
+		ModoDeJogo(6, 6, 32);
 	}
 	
 	public void ModoMedio() {
