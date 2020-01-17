@@ -8,11 +8,12 @@ public class Tabuleiro {
 	private int numLinhas;
 	private TipoCasa[][] matrizTabuleiro;
 	private int[][] numBombasAoRedor;
-	private int quantidadeDeCasasSemMina = 2;
+	private int quantidadeDeCasasSemMina;
 
-	public Tabuleiro(int numColunas, int numLinhas) {
+	public Tabuleiro(int numColunas, int numLinhas, int quantidadeDeCasasSemMina) {
 		this.numColunas = numColunas;
 		this.numLinhas = numLinhas;
+		this.quantidadeDeCasasSemMina = quantidadeDeCasasSemMina;
 		matrizTabuleiro = new TipoCasa[numColunas][numLinhas];
 		inicializaMatrizes();
 		

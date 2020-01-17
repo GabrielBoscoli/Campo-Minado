@@ -6,6 +6,7 @@ import javax.swing.*;
 import controladores.ControladorCampoMinado;
 import observer.IObservado;
 import observer.IObservador;
+import dominio.Coordenada;
 import dominio.Tabuleiro;
 import dominio.TipoCasa;
 
@@ -15,6 +16,7 @@ import java.awt.event.MouseListener;
 import java.awt.geom.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * Classe responsável pelo desenho do tabuleiro
@@ -30,6 +32,10 @@ public class PainelTabuleiro extends JPanel implements IObservador, MouseListene
 
 	private boolean perdeu = false;
 	Image imagemMina;
+	
+	//ultimas coordenadas clicadas
+	int colunaClicada = 0;
+	int linhaClicada = 0;
 
 	public PainelTabuleiro() {
 		this.setLayout(null);
@@ -68,12 +74,6 @@ public class PainelTabuleiro extends JPanel implements IObservador, MouseListene
 				tipoCasa = tabuleiro.getMatrizTabuleiro()[coluna][linha];
 				Rectangle2D retangulo = new Rectangle2D.Double(x - 1 /*"- 1" adicionado por conta do border layout*/, y, tamanhoQuadrado, tamanhoQuadrado);
 				g2d.setPaint(tipoCasaToColor(tipoCasa));
-				if (tipoCasa == TipoCasa.casaSemMinaAtirada) {
-					JLabel label = new JLabel("   " + tabuleiro.getQntBombasAoRedor(coluna, linha)); // roubei bonito aqui. ver como fazer da melhor forma
-					label.setSize(tamanhoQuadrado, tamanhoQuadrado);
-					label.setLocation(x, tamanhoQuadrado * linha);
-					this.add(label);
-				}
 				g2d.fill(retangulo);
 				g2d.setPaint(Color.black);
 				g2d.draw(retangulo);
@@ -96,6 +96,20 @@ public class PainelTabuleiro extends JPanel implements IObservador, MouseListene
 				}
 			}
 		}
+	}
+	
+	private void colocaLabelQuantidadeDeBombasAoRedor(int coluna, int linha) {
+		int x = tamanhoQuadrado * coluna;
+		String numBombasAoRedor = Integer.toString(tabuleiro.getQntBombasAoRedor(coluna, linha));
+		
+		if(numBombasAoRedor.equals("0")) {
+			numBombasAoRedor = "";
+		}
+		
+		JLabel label = new JLabel("   " + numBombasAoRedor); // roubei bonito aqui. ver como fazer da melhor forma
+		label.setSize(tamanhoQuadrado, tamanhoQuadrado);
+		label.setLocation(x, tamanhoQuadrado * linha);
+		this.add(label);
 	}
 
 	public int getTamanhoQuadrado() {
@@ -125,15 +139,21 @@ public class PainelTabuleiro extends JPanel implements IObservador, MouseListene
 	@Override
 	public void notify(IObservado observado) {
 		perdeu = (boolean) ControladorCampoMinado.getControladorCampoMinado().get(1);
+		@SuppressWarnings("unchecked")
+		ArrayList<Coordenada> casasAbertas = (ArrayList<Coordenada>) ControladorCampoMinado.getControladorCampoMinado().get(3);
+		
+		for(int i = 0; i < casasAbertas.size(); i++) {
+			colocaLabelQuantidadeDeBombasAoRedor(casasAbertas.get(i).getColuna(), casasAbertas.get(i).getLinha());
+		}
 		repaint();
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		int coluna = e.getX() / tamanhoQuadrado;
-		int linha = e.getY() / tamanhoQuadrado;
+		colunaClicada = e.getX() / tamanhoQuadrado;
+		linhaClicada = e.getY() / tamanhoQuadrado;
 
-		ControladorCampoMinado.getControladorCampoMinado().campoMinadoClicado(coluna, linha);
+		ControladorCampoMinado.getControladorCampoMinado().campoMinadoClicado(colunaClicada, linhaClicada);
 	}
 
 	@Override

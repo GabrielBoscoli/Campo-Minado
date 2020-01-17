@@ -3,6 +3,7 @@ package controladores;
 import java.util.ArrayList;
 import java.util.List;
 
+import dominio.Coordenada;
 import dominio.Tabuleiro;
 import dominio.TipoCasa;
 import gui.FrameCampoMinado;
@@ -14,14 +15,15 @@ public class ControladorCampoMinado implements IObservado {
 	List<IObservador> listaObservadores = new ArrayList<IObservador>();
 	static ControladorCampoMinado controlador = null;
 
-	Tabuleiro tabuleiro = new Tabuleiro(20, 20);
+	Tabuleiro tabuleiro;
 	private boolean perdeu = false;
 	
 	MenuPrincipal menuPrincipal;
 	FrameCampoMinado frameCampoMinado;
 	
-	int quantidadeDeCasasAcertadas = 0;
 	boolean venceu = false;
+	
+	ArrayList<Coordenada> casasAbertas = new ArrayList<>();
 
 	private ControladorCampoMinado() {
 
@@ -35,6 +37,7 @@ public class ControladorCampoMinado implements IObservado {
 	}
 
 	public void campoMinadoClicado(int coluna, int linha) {
+		casasAbertas.clear();
 		if (perdeu) {
 			return;
 		}
@@ -46,7 +49,10 @@ public class ControladorCampoMinado implements IObservado {
 			perdeu = true;
 		} else if (tipoCasa == TipoCasa.casaIntactaSemMina) {
 			matrizTabuleiro[coluna][linha] = TipoCasa.casaSemMinaAtirada;
-			quantidadeDeCasasAcertadas++;
+			casasAbertas.add(new Coordenada(coluna, linha));
+			if(tabuleiro.getQntBombasAoRedor(coluna, linha) == 0) {
+				abreTodasAsCasaAoRedor(coluna, linha);
+			}
 		}
 		
 		if(verificaSeVenceu()) {
@@ -58,24 +64,85 @@ public class ControladorCampoMinado implements IObservado {
 		}
 	}
 	
+	//algoritmo preguiçoso. muito codigo repetido. baseado no metodo "removeUmaBombaAoRedorDasCasaEmVolta" na classe Tabuleiro
+	public void abreTodasAsCasaAoRedor(int coluna, int linha) {
+		int linhaAux = linha + 1;
+		int colunaAux = coluna - 1;
+		if(colunaAux >= 0) {
+			abreTodasAsCasaAoRedorAux(colunaAux, linha);
+			if(linhaAux < tabuleiro.getNumLinhas()) {
+				abreTodasAsCasaAoRedorAux(colunaAux, linhaAux);
+			}
+			linhaAux = linha - 1;
+			if(linhaAux >= 0) {
+				abreTodasAsCasaAoRedorAux(colunaAux, linhaAux);
+			}
+		}
+		linhaAux = linha + 1;
+		colunaAux = coluna + 1;
+		if(colunaAux < tabuleiro.getNumColunas()) {
+			abreTodasAsCasaAoRedorAux(colunaAux, linha);
+			if(linhaAux < tabuleiro.getNumLinhas()) {
+				abreTodasAsCasaAoRedorAux(colunaAux, linhaAux);
+			}
+			linhaAux = linha - 1;
+			if(linhaAux >= 0) {
+				abreTodasAsCasaAoRedorAux(colunaAux, linhaAux);
+			}
+		}
+		linhaAux = linha + 1;
+		if(linhaAux < tabuleiro.getNumLinhas()) {
+			abreTodasAsCasaAoRedorAux(coluna, linhaAux);
+		}
+		linhaAux = linha - 1;
+		if(linhaAux >= 0) {
+			abreTodasAsCasaAoRedorAux(coluna, linhaAux);
+		}
+	}
+			
+	/**
+	 * Abre a casa, dada sua coluna e linha, se ela nao possuir mina.
+	 * Caso não possua mina alguma ao redor, chama "abreTodasAsCasaAoRedor".
+	 * 
+	 * @param coluna - coluna da casa a ser aberta
+	 * @param linha - linha da casa a ser aberta
+	 */
+	private void abreTodasAsCasaAoRedorAux(int coluna, int linha) {
+		if(tabuleiro.getMatrizTabuleiro()[coluna][linha] == TipoCasa.casaIntactaSemMina) {
+			tabuleiro.getMatrizTabuleiro()[coluna][linha] = TipoCasa.casaSemMinaAtirada;
+			casasAbertas.add(new Coordenada(coluna, linha));
+			if(tabuleiro.getQntBombasAoRedor(coluna, linha) == 0) {
+				abreTodasAsCasaAoRedor(coluna,linha);
+			}
+		}
+	}
+	
 	private boolean verificaSeVenceu() {
-		return quantidadeDeCasasAcertadas == tabuleiro.getQuantidadeDeCasasSemMina();
+		int contador = 0;
+		for(int i = 0; i < tabuleiro.getNumColunas(); i++) {
+			for(int j = 0; j < tabuleiro.getNumLinhas(); j++) {
+				if(tabuleiro.getMatrizTabuleiro()[i][j] == TipoCasa.casaSemMinaAtirada) {
+					contador++;
+				}
+			}
+		}
+		return contador == tabuleiro.getQuantidadeDeCasasSemMina();
 	}
 
 	public void ModoFacil() {
-		ModoDeJogo(6, 6);
+		ModoDeJogo(6, 6, 2);
 	}
 	
 	public void ModoMedio() {
-		ModoDeJogo(10, 10);
+		ModoDeJogo(10, 10, 2);
 	}
 	
 	public void ModoDificil() {
-		ModoDeJogo(20, 20);
+		ModoDeJogo(20, 20, 2);
 	}
 	
-	private void ModoDeJogo(int numColunas, int numLinhas) {
-		tabuleiro = new Tabuleiro(numColunas, numLinhas);
+	private void ModoDeJogo(int numColunas, int numLinhas, int quantidadeDeCasasSemMina) {
+		tabuleiro = new Tabuleiro(numColunas, numLinhas, quantidadeDeCasasSemMina);
 		menuPrincipal.setVisible(false);
 		frameCampoMinado = new FrameCampoMinado();
 	}
@@ -106,6 +173,8 @@ public class ControladorCampoMinado implements IObservado {
 			return perdeu;
 		} else if (i == 2) {
 			return venceu;
+		} else if (i == 3) {
+			return casasAbertas;
 		}
 		return null;
 	}
